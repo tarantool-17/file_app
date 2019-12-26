@@ -15,7 +15,12 @@ namespace FileApplication.Data.Repositories
         {
             _items = new ConcurrentDictionary<int, Folder>(_defaultItems.Select(x => new KeyValuePair<int, Folder>(x.Id, x)));
         }
-        
+
+        public async Task<List<Folder>> GetAllAsync()
+        {
+            return _items.Values.ToList();
+        }
+
         public async Task<Folder> GetAsync(int id)
         {
             if (_items.TryGetValue(id, out var item))
@@ -46,12 +51,12 @@ namespace FileApplication.Data.Repositories
             new Folder
             {
                 Id = 1,
-                Title = "Folder 1"
+                Name = "Folder 1"
             },
             new Folder
             {
                 Id = 2,
-                Title = "Folder 2",
+                Name = "Folder 2",
                 ParentFolderId = 1
             }
         };

@@ -15,7 +15,12 @@ namespace FileApplication.Data.Repositories
         {
             _items = new ConcurrentDictionary<int, File>(_defaultFiles.Select(x => new KeyValuePair<int, File>(x.Id, x)));
         }
-        
+
+        public async Task<List<File>> GetAllAsync()
+        {
+            return _items.Values.ToList();
+        }
+
         public async Task<File> GetAsync(int id)
         {
             if (_items.TryGetValue(id, out var item))
@@ -47,28 +52,32 @@ namespace FileApplication.Data.Repositories
             {
                 Id = 1,
                 Name = "test1.txt",
-                Size = 100
+                Size = 100,
+                Src = "/test1.txt"
             },
             new File
             {
                 Id = 2,
                 Name = "test2.txt",
                 Size = 200,
-                FolderId = 1
+                ParentFolderId = 1,
+                Src = "/test2.txt"
             },
             new File
             {
                 Id = 3,
                 Name = "test3.txt",
                 Size = 300,
-                FolderId = 1
+                ParentFolderId = 1,
+                Src = "/test3.txt"
             },
             new File
             {
                 Id = 4,
                 Name = "test4.txt",
                 Size = 50,
-                FolderId = 2
+                ParentFolderId = 2,
+                Src = "/test4.txt"
             }
         };
     }

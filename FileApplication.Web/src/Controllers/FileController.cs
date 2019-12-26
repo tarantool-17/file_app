@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 using FileApplication.BL.Models;
 using FileApplication.BL.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -20,5 +21,16 @@ namespace FileApplication.Controllers
         {
             await _service.UploadFileAsync(model, null);
         }
+        
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Download(int id)
+        {
+            var stream = await _service.DownloadAsync(id);
+
+            if(stream == null)
+                return NotFound(); 
+
+            return File(stream, "application/octet-stream");
+        }    
     }
 }

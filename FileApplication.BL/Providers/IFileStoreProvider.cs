@@ -1,10 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 
 namespace FileApplication.BL.Providers
 {
     public interface IFileStoreProvider
     {
-        Task UploadDocumentAsync(string name, object stream);
-        Task DeleteDocumentAsync(string name);
+        Task<Stream> GetDocumentStreamAsync(string src);
+        Task<string> UploadDocumentAsync(Stream stream);
+        Task DeleteDocumentAsync(string src);
     }
 }

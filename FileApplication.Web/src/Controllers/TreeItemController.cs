@@ -1,17 +1,26 @@
 ﻿using System.Threading.Tasks;
 using FileApplication.BL.Entities;
+using FileApplication.BL.Models;
 using FileApplication.BL.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FileApplication.Controllers
 {
-    public class ItemController : Controller
+    public class TreeItemController : Controller
     {
         private readonly IItemFactory _factory;
+        private readonly ITreeService _service;
 
-        public ItemController(IItemFactory factory)
+        public TreeItemController(IItemFactory factory, ITreeService service)
         {
             _factory = factory;
+            _service = service;
+        }
+
+        [HttpGet("tree")]
+        public async Task<TreeItemModel> GetFullTreeAsync()
+        {
+            return await _service.GetTreeAsync();
         }
 
         [HttpDelete("{type}/{id}")]

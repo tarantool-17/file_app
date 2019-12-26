@@ -1,9 +1,6 @@
 ﻿namespace FileApplication.BL.Entities
 {
-    public class Folder
+    public class Folder: BaseTreeItem
     {
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public int? ParentFolderId { get; set; }
     }
 }
