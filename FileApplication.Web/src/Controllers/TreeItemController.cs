@@ -20,25 +20,27 @@ namespace FileApplication.Controllers
         [HttpGet("tree")]
         public async Task<TreeItemModel> GetFullTreeAsync()
         {
-            return await _service.GetTreeAsync();
+            var res = await _service.GetTreeAsync();
+
+            return res;
         }
 
         [HttpDelete("{type}/{id}")]
-        public async Task DeleteAsync(ItemType type, int id)
+        public async Task DeleteAsync(ItemType type, string id)
         {
             var service = _factory.GetItemService(type);
             await service.DeleteAsync(id);
         }
         
         [HttpPut("{type}/{id}/{name}")]
-        public async Task RenameAsync(ItemType type, int id, string name)
+        public async Task RenameAsync(ItemType type, string id, string name)
         {
             var service = _factory.GetItemService(type);
             await service.RenameAsync(id, name);
         }
         
         [HttpPut("{type}/{id}/{parentId}")]
-        public async Task CopyAsync(ItemType type, int id, int? parentId)
+        public async Task CopyAsync(ItemType type, string id, string parentId)
         {
             var service = _factory.GetItemService(type);
             await service.CopyAsync(id, parentId);

@@ -9,19 +9,21 @@ namespace FileApplication.Data.Repositories
 {
     public class FolderInMemoryRepository : IFolderRepository
     {
-        private readonly ConcurrentDictionary<int, Folder> _items;
+        private readonly ConcurrentDictionary<string, Folder> _items;
 
         public FolderInMemoryRepository()
         {
-            _items = new ConcurrentDictionary<int, Folder>(_defaultItems.Select(x => new KeyValuePair<int, Folder>(x.Id, x)));
+            _items = new ConcurrentDictionary<string, Folder>(_defaultItems.Select(x => new KeyValuePair<string, Folder>(x.Id, x)));
         }
 
-        public async Task<List<Folder>> GetAllAsync()
+        public async Task<List<BaseTreeItem>> GetAllBaseAsync()
         {
-            return _items.Values.ToList();
+            return _items.Values
+                .Select(x => (BaseTreeItem)x)
+                .ToList();
         }
 
-        public async Task<Folder> GetAsync(int id)
+        public async Task<Folder> GetAsync(string id)
         {
             if (_items.TryGetValue(id, out var item))
             {
@@ -36,12 +38,22 @@ namespace FileApplication.Data.Repositories
             _items.TryAdd(folder.Id, folder);
         }
 
-        public async Task UpdateAsync(Folder folder)
+        public async Task RenameAsync(string id, string newName)
         {
-            _items.AddOrUpdate(folder.Id, folder, (key, value) => folder);
+            if (_items.TryGetValue(id, out var item))
+            {
+                _items.AddOrUpdate(id, item, (s, folder) => { 
+                    folder.Name = newName;
+                    return folder;
+                });
+                
+                return;
+            }
+            
+            throw new KeyNotFoundException();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(string id)
         {
             _items.TryRemove(id, out _);
         }
@@ -50,14 +62,14 @@ namespace FileApplication.Data.Repositories
         {
             new Folder
             {
-                Id = 1,
+                Id = "1",
                 Name = "Folder 1"
             },
             new Folder
             {
-                Id = 2,
+                Id = "2",
                 Name = "Folder 2",
-                ParentFolderId = 1
+                ParentFolderId = "1"
             }
         };
     }

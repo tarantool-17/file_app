@@ -23,7 +23,7 @@ namespace FileApplication.Controllers
         }
         
         [HttpGet("{id}")]
-        public async Task<IActionResult> Download(int id)
+        public async Task<IActionResult> Download(string id)
         {
             var stream = await _service.DownloadAsync(id);
 

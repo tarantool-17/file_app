@@ -1,4 +1,24 @@
 ﻿#container{
-    width: 500px;
+    width: 600px;
+    height: 400px;
     margin: 0 auto;
+}
+
+#center{
+    width: 100%;
+}
+
+#center div{
+    display: inline-block;
+}
+
+#tree{
+    width: 300px;
+    height: 500px;
+    border-right: black 1px solid;
+}
+
+#info{
+    width: 200px;
+    margin: 0;
 }

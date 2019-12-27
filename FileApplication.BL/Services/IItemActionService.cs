@@ -7,8 +7,8 @@ namespace FileApplication.BL.Services
     {
         ItemType Type { get; }
         
-        Task DeleteAsync(int id);
-        Task RenameAsync(int id, string name);
-        Task CopyAsync(int id, int? parentId);
+        Task DeleteAsync(string id);
+        Task RenameAsync(string id, string name);
+        Task CopyAsync(string id, string parentId);
     }
 }

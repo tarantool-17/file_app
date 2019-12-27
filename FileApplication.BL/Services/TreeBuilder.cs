@@ -1,19 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using FileApplication.BL.Entities;
-using FileApplication.BL.Extensions;
 using FileApplication.BL.Models;
 
 namespace FileApplication.BL.Services
 {
     public interface ITreeBuilder
     {
-        TreeItemModel BuildFolderTree(List<BaseTreeItem> children);
+        TreeItemModel BuildFolderTree(List<BaseTreeItem> items);
     }
     
     public class TreeBuilder : ITreeBuilder
     {
-        public TreeItemModel BuildFolderTree(List<BaseTreeItem> children)
+        public TreeItemModel BuildFolderTree(List<BaseTreeItem> items)
         {
             var root = new TreeItemModel
             {
@@ -21,14 +20,14 @@ namespace FileApplication.BL.Services
                 Type = ItemType.Folder
             };
 
-            PopulateNode(root, children);
+            PopulateNode(root, items);
 
             return root;
         }
 
-        private void PopulateNode(TreeItemModel node, List<BaseTreeItem> children)
+        private void PopulateNode(TreeItemModel node, List<BaseTreeItem> items)
         {
-            node.Children = children?
+            node.Children = items?
                 .Where(x => x.ParentFolderId == node.Id)
                 .Select(x => x.ToModel())
                 .ToList();
@@ -41,7 +40,7 @@ namespace FileApplication.BL.Services
 
             foreach (var folder in childFolders)
             {
-                PopulateNode(folder, children);
+                PopulateNode(folder, items);
             }
         }
     }

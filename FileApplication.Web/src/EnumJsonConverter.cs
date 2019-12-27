@@ -1,42 +1,29 @@
 ﻿using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using FileApplication.BL.Entities;
+using Newtonsoft.Json;
 
 namespace FileApplication
 {
-    public class ItemTypeJsonConverterFactory : JsonConverterFactory
-    {
-        public override bool CanConvert(Type typeToConvert)
-        {
-            return typeToConvert == typeof(ItemType);
-        }
-
-        public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
-        {
-            return new ItemTypeJsonConverter();
-        }
-    }
-
     public class ItemTypeJsonConverter : JsonConverter<ItemType>
     {
-        public override ItemType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Write(Utf8JsonWriter writer, ItemType value, JsonSerializerOptions options)
+        public override void WriteJson(JsonWriter writer, ItemType value, JsonSerializer serializer)
         {
             switch (value)
             {
                 case ItemType.File:
-                    writer.WriteStringValue("file");
+                    writer.WriteValue("file");
                     break;
-                
+    
                 default:
-                    writer.WriteStringValue("dir");
+                    writer.WriteValue("dir");
                     break;
             }
+        }
+
+        public override ItemType ReadJson(JsonReader reader, Type objectType, ItemType existingValue, bool hasExistingValue,
+            JsonSerializer serializer)
+        {
+            throw new NotImplementedException();
         }
     }
 }

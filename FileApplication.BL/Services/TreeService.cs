@@ -14,45 +14,28 @@ namespace FileApplication.BL.Services
     
     public class TreeService : ITreeService
     {
-        private readonly IFolderRepository _folderRepository;
-        private readonly IFileRepository _fileRepository;
+        private readonly IEnumerable<IBaseTreeItemRepository> _repositories;
         private readonly ITreeBuilder _treeBuilder;
 
-        public TreeService(
-            IFolderRepository folderRepository,
-            IFileRepository fileRepository,
-            ITreeBuilder treeBuilder)
+        public TreeService(IEnumerable<IBaseTreeItemRepository> repositories, ITreeBuilder treeBuilder)
         {
-            _folderRepository = folderRepository;
-            _fileRepository = fileRepository;
+            _repositories = repositories;
             _treeBuilder = treeBuilder;
         }
 
         public async Task<TreeItemModel> GetTreeAsync()
         {
-            var filesTask = _fileRepository.GetAllAsync();
-            var foldersTask = _folderRepository.GetAllAsync();
-
-            await Task.WhenAll(filesTask, foldersTask);
-
-            var files = filesTask.Result;
-            var folders = foldersTask.Result;
-
-            var children = new List<BaseTreeItem>();
+            var tasks = _repositories.Select(x => x.GetAllBaseAsync()).ToList();
             
-            children.AddRange(files.Select(x =>
-            {
-                x.Type = ItemType.File;
-                return x;
-            }));
-            
-            children.AddRange(folders.Select(x =>
-            {
-                x.Type = ItemType.Folder;
-                return x;
-            }));
+            await Task.WhenAll(tasks);
 
-            return _treeBuilder.BuildFolderTree(children);
+            var items = new List<BaseTreeItem>();
+            foreach (var task in tasks)
+            {
+                items.AddRange(await task);
+            }
+
+            return _treeBuilder.BuildFolderTree(items);
         }
     }
 }

@@ -25,26 +25,17 @@ namespace FileApplication.BL.Services
             _fileRepository = fileRepository;
         }
         
-        public Task DeleteAsync(int id)
+        public Task DeleteAsync(string id)
         {
             throw new System.NotImplementedException();
         }
 
-        public async Task RenameAsync(int id, string name)
+        public async Task RenameAsync(string id, string name)
         {
-            //TODO: Rename without get.
-            
-            var folder = await _repository.GetAsync(id);
-
-            if (folder == null)
-                throw new KeyNotFoundException();
-
-            folder.Name = name;
-            
-            await _repository.UpdateAsync(folder);
+            await _repository.RenameAsync(id, name);
         }
 
-        public Task CopyAsync(int id, int? parentId)
+        public Task CopyAsync(string id, string parentId)
         {
             throw new System.NotImplementedException();
         }

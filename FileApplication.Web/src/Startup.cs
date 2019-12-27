@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text.Json.Serialization;
 using FileApplication.BL.Providers;
 using FileApplication.BL.Repositories;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 
 namespace FileApplication
 {
@@ -24,6 +26,8 @@ namespace FileApplication
             services.AddScoped<ITreeBuilder, TreeBuilder>();
             
             // Repositories.
+            services.AddScoped<IBaseTreeItemRepository, FileInMemoryRepository>();
+            services.AddScoped<IBaseTreeItemRepository, FolderInMemoryRepository>();
             services.AddScoped<IFileRepository, FileInMemoryRepository>();
             services.AddScoped<IFolderRepository, FolderInMemoryRepository>();
             services.AddScoped<IFileStoreProvider, FileStoreInMemoryProvider>();
@@ -32,11 +36,11 @@ namespace FileApplication
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "FileApp API", Version = "v1" });
             });
-            
-            services.AddMvc().AddJsonOptions(options =>
+
+            services.AddMvc().AddNewtonsoftJson(options =>
             {
-                options.JsonSerializerOptions.Converters.Add(new ItemTypeJsonConverterFactory());
-                options.JsonSerializerOptions.IgnoreNullValues = true;
+                options.SerializerSettings.Converters.Add(new ItemTypeJsonConverter());
+                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             });
         }
 

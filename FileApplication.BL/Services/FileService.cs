@@ -12,7 +12,7 @@ namespace FileApplication.BL.Services
     public interface IFileService : IItemActionService
     {
         Task UploadFileAsync(FileModel file, Stream stream);
-        Task<Stream> DownloadAsync(int id);
+        Task<Stream> DownloadAsync(string id);
     }
     
     public class FileService : IFileService
@@ -28,28 +28,19 @@ namespace FileApplication.BL.Services
             _repository = repository;
         }
         
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(string id)
         {
             //TODO: Smart delete from provider.
             
             await _repository.DeleteAsync(id);
         }
 
-        public async Task RenameAsync(int id, string name)
+        public async Task RenameAsync(string id, string name)
         {
-            //TODO: Rename without get.
-            
-            var file = await _repository.GetAsync(id);
-
-            if (file == null)
-                throw new KeyNotFoundException();
-
-            file.Name = name;
-            
-            await _repository.UpdateAsync(file);
+            await _repository.RenameAsync(id, name);
         }
 
-        public Task CopyAsync(int id, int? parentId)
+        public Task CopyAsync(string id, string parentId)
         {
             throw new System.NotImplementedException();
         }
@@ -58,19 +49,14 @@ namespace FileApplication.BL.Services
         {
             var src = await _provider.UploadDocumentAsync(stream);
 
-            file.Src = src;
+            file.Id = src;
             
             await _repository.CreateAsync(file.ToEntity());
         }
 
-        public async Task<Stream> DownloadAsync(int id)
+        public async Task<Stream> DownloadAsync(string id)
         {
-            var file = await _repository.GetAsync(id);
-
-            if (file == null)
-                throw new KeyNotFoundException();
-
-            return await _provider.GetDocumentStreamAsync(file.Src);
+            return await _provider.GetDocumentStreamAsync(id);
         }
     }
 }
