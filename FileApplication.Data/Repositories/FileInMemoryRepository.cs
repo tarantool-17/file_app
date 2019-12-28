@@ -16,11 +16,9 @@ namespace FileApplication.Data.Repositories
             _items = new ConcurrentDictionary<string, File>(_defaultFiles.Select(x => new KeyValuePair<string, File>(x.Id, x)));
         }
 
-        public async Task<List<BaseTreeItem>> GetAllBaseAsync()
+        public async Task<IEnumerable<File>> GetAllAsync()
         {
-            return _items.Values
-                .Select(x => (BaseTreeItem)x)
-                .ToList();
+            return _items.Values.ToList();
         }
 
         public async Task<File> GetAsync(string id)

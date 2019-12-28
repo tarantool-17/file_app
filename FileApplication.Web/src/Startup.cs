@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using FileApplication.BL.Providers;
 using FileApplication.BL.Repositories;
 using FileApplication.BL.Services;
+using FileApplication.BL.Services.Base;
 using FileApplication.Data.Providers;
 using FileApplication.Data.Repositories;
 using Microsoft.AspNetCore.Builder;
@@ -19,15 +20,15 @@ namespace FileApplication
         public void ConfigureServices(IServiceCollection services)
         {
             // Services.
-            services.AddScoped<IFileService, FileService>();
-            services.AddScoped<IFolderService, FolderService>();
-            services.AddScoped<ITreeService, TreeService>();
-            services.AddScoped<IItemFactory, ItemFactory>();
+            services.AddSingleton<IFacade, Facade>();
             services.AddScoped<ITreeBuilder, TreeBuilder>();
+            services.AddScoped<IFileComponentService, FileComponentService>();
+            services.AddScoped<IFolderComponentService, FolderComponentService>();
+            services.AddScoped<IComponentService, FileComponentService>();
+            services.AddScoped<IComponentService, FolderComponentService>();
+            services.AddScoped<IComponentServiceFactory, ComponentServiceFactory>();
             
             // Repositories.
-            services.AddScoped<IBaseTreeItemRepository, FileInMemoryRepository>();
-            services.AddScoped<IBaseTreeItemRepository, FolderInMemoryRepository>();
             services.AddScoped<IFileRepository, FileInMemoryRepository>();
             services.AddScoped<IFolderRepository, FolderInMemoryRepository>();
             services.AddScoped<IFileStoreProvider, FileStoreInMemoryProvider>();
@@ -39,7 +40,7 @@ namespace FileApplication
 
             services.AddMvc().AddNewtonsoftJson(options =>
             {
-                options.SerializerSettings.Converters.Add(new ItemTypeJsonConverter());
+                // options.SerializerSettings.Converters.Add(new ItemTypeJsonConverter());
                 options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             });
         }

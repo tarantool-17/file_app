@@ -1,39 +1,65 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using FileApplication.BL.Entities;
+using System.Threading.Tasks;
 using FileApplication.BL.Models;
+using FileApplication.BL.Services.Base;
 
 namespace FileApplication.BL.Services
 {
     public interface ITreeBuilder
     {
-        TreeItemModel BuildFolderTree(List<BaseTreeItem> items);
+        Task<Component> BuildFolderTree();
     }
     
     public class TreeBuilder : ITreeBuilder
     {
-        public TreeItemModel BuildFolderTree(List<BaseTreeItem> items)
+        private readonly IComponentServiceFactory _serviceFactory;
+        
+        public TreeBuilder(IComponentServiceFactory serviceFactory)
         {
-            var root = new TreeItemModel
+            _serviceFactory = serviceFactory;
+        }
+        
+        public async Task<Component> BuildFolderTree()
+        {
+            var root = new FolderComponent
             {
-                Name = "root",
-                Type = ItemType.Folder
+                Name = "root"
             };
+
+            var items = await GetTreeItemsAsync();
 
             PopulateNode(root, items);
 
             return root;
         }
+        
+        private async Task<List<Component>> GetTreeItemsAsync()
+        {
+            var tasks = _serviceFactory
+                .GetAllComponentServices()
+                .Select(x => x.GetAllAsync())
+                .ToList();
+            
+            await Task.WhenAll(tasks);
 
-        private void PopulateNode(TreeItemModel node, List<BaseTreeItem> items)
+            var items = new List<Component>();
+            foreach (var task in tasks)
+            {
+                items.AddRange(await task);
+            }
+
+            return items;
+        }
+
+        private void PopulateNode(Component node, List<Component> items)
         {
             node.Children = items?
-                .Where(x => x.ParentFolderId == node.Id)
-                .Select(x => x.ToModel())
+                .Where(x => x.ParentId == node.Id)
                 .ToList();
 
             var childFolders = node.Children?
-                .Where(x => x.Type == ItemType.Folder);
+                .Where(x => x.Type == ComponentType.Folder);
 
             if (!(childFolders?.Any() ?? false))
                 return;

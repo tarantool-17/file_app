@@ -1,6 +1,6 @@
-﻿namespace FileApplication.BL.Entities
+﻿namespace Composite
 {
-    public enum ItemType
+    public enum ComponentType
     {
         Default = 0,
         File = 1,

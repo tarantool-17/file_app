@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,11 +17,9 @@ namespace FileApplication.Data.Repositories
             _items = new ConcurrentDictionary<string, Folder>(_defaultItems.Select(x => new KeyValuePair<string, Folder>(x.Id, x)));
         }
 
-        public async Task<List<BaseTreeItem>> GetAllBaseAsync()
+        public async Task<IEnumerable<Folder>> GetAllAsync()
         {
-            return _items.Values
-                .Select(x => (BaseTreeItem)x)
-                .ToList();
+            return _items.Values.ToList();
         }
 
         public async Task<Folder> GetAsync(string id)
@@ -35,6 +34,7 @@ namespace FileApplication.Data.Repositories
 
         public async Task CreateAsync(Folder folder)
         {
+            folder.Id = Guid.NewGuid().ToString();
             _items.TryAdd(folder.Id, folder);
         }
 

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using FileApplication.BL.Models;
 using FileApplication.BL.Services;
+using FileApplication.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FileApplication.Controllers
@@ -8,17 +8,17 @@ namespace FileApplication.Controllers
     [Route("folder")]
     public class FolderController : Controller
     {
-        private readonly IFolderService _service;
+        private readonly IFacade _facade;
 
-        public FolderController(IFolderService service)
+        public FolderController(IFacade facade)
         {
-            _service = service;
+            _facade = facade;
         }
 
         [HttpPost]
-        public async Task CreateAsync([FromBody] FolderModel folder)
+        public async Task CreateAsync([FromBody] FolderModel model)
         {
-            await _service.CreateAsync(folder);
+            await _facade.CreateSubfolder(model.ParentId, model.Name);
         }
     }
 }

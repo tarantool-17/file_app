@@ -1,7 +1,6 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using FileApplication.BL.Models;
+﻿using System.Threading.Tasks;
 using FileApplication.BL.Services;
+using FileApplication.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FileApplication.Controllers
@@ -9,23 +8,23 @@ namespace FileApplication.Controllers
     [Route("file")]
     public class FileController : Controller
     {
-        private readonly IFileService _service;
+        private readonly IFacade _facade;
 
-        public FileController(IFileService service)
+        public FileController(IFacade facade)
         {
-            _service = service;
+            _facade = facade;
         }
 
         [HttpPost]
         public async Task UploadAsync([FromBody]FileModel model)
         {
-            await _service.UploadFileAsync(model, null);
+            await _facade.UploadFileAsync(model.ParentId, model.Name, null);
         }
         
         [HttpGet("{id}")]
         public async Task<IActionResult> Download(string id)
         {
-            var stream = await _service.DownloadAsync(id);
+            var stream = await _facade.DownloadFileAsync(id);
 
             if(stream == null)
                 return NotFound(); 

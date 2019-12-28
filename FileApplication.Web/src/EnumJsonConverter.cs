@@ -1,16 +1,16 @@
 ﻿using System;
-using FileApplication.BL.Entities;
+using FileApplication.BL.Models;
 using Newtonsoft.Json;
 
 namespace FileApplication
 {
-    public class ItemTypeJsonConverter : JsonConverter<ItemType>
+    public class ItemTypeJsonConverter : JsonConverter<ComponentType>
     {
-        public override void WriteJson(JsonWriter writer, ItemType value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, ComponentType value, JsonSerializer serializer)
         {
             switch (value)
             {
-                case ItemType.File:
+                case ComponentType.File:
                     writer.WriteValue("file");
                     break;
     
@@ -20,7 +20,7 @@ namespace FileApplication
             }
         }
 
-        public override ItemType ReadJson(JsonReader reader, Type objectType, ItemType existingValue, bool hasExistingValue,
+        public override ComponentType ReadJson(JsonReader reader, Type objectType, ComponentType existingValue, bool hasExistingValue,
             JsonSerializer serializer)
         {
             throw new NotImplementedException();
