@@ -20,8 +20,6 @@ namespace FileApplication.BL.Services
     
     public class Facade : IFacade
     {
-        private Component _root;
-
         private readonly ITreeBuilder _builder;
         private readonly IFileComponentService _fileService;
         private readonly IFolderComponentService _folderService;
@@ -41,17 +39,12 @@ namespace FileApplication.BL.Services
 
         public async Task<Component> GetTreeAsync(bool rebuild = false)
         {
-            if (_root == null || rebuild)
-            {
-                _root = await _builder.BuildFolderTree();
-            }
-            
-            return _root;
+            return await _builder.GetTreeAsync();
         }
 
         public async Task RenameAsync(ComponentType type, string id, string newName)
         {
-            var component = _root.FindByIdAndType(type, id);
+            var component = await GetTreeComponentAsync(type, id);
             
             var service = _services.FirstOrDefault(x => x.Type == component.Type);
 
@@ -62,7 +55,7 @@ namespace FileApplication.BL.Services
 
         public async Task DeleteAsync(ComponentType type, string id)
         {
-            var component = _root.FindByIdAndType(type, id);
+            var component = await GetTreeComponentAsync(type, id);
 
             await DeleteComponent(component);
         }
@@ -75,7 +68,8 @@ namespace FileApplication.BL.Services
             
             if (component.Children != null)
             {
-                foreach (var child in component.Children)
+                var children = component.Children.ToList();
+                foreach (var child in children)
                 {
                     DeleteComponent(child);
                 }
@@ -86,7 +80,7 @@ namespace FileApplication.BL.Services
 
         public async Task CopyAsync(ComponentType type, string id)
         {
-            var component = _root.FindByIdAndType(type, id);
+            var component = await GetTreeComponentAsync(type, id);
 
             await CopyComponentTo(component, component.Parent);
         }
@@ -95,17 +89,17 @@ namespace FileApplication.BL.Services
         {
             var service = _services.FirstOrDefault(x => x.Type == component.Type);
 
-            var newComponent = await service.CopyToAsync(component, parent);
+            var dbComponent = await service.CopyToAsync(component, parent);
+            
+            var treeComponent = component.CopyTo(parent, dbComponent.Id);
             
             if (component.Children != null)
             {
                 foreach (var child in component.Children)
                 {
-                    await CopyComponentTo(child, newComponent);
+                    await CopyComponentTo(child, treeComponent);
                 }
             }
-            
-            component.CopyTo(parent);
         }
 
         public async Task<Stream> DownloadFileAsync(string id)
@@ -115,7 +109,7 @@ namespace FileApplication.BL.Services
 
         public async Task UploadFileAsync(string id, string name, Stream stream)
         {
-            var component = _root.FindByIdAndType(ComponentType.Folder, id);
+            var component = await GetTreeComponentAsync(ComponentType.Folder, id);
             
             var newComponent = await _fileService.UploadFileAsync(id, name, stream);
             
@@ -124,11 +118,17 @@ namespace FileApplication.BL.Services
 
         public async Task CreateSubfolder(string id, string name)
         {
-            var component = _root.FindByIdAndType(ComponentType.Folder, id);
+            var component = await GetTreeComponentAsync(ComponentType.Folder, id);
 
             var newComponent = await _folderService.CreateAsync(id, name);
             
             component.AddChild(newComponent);
+        }
+
+        private async Task<Component> GetTreeComponentAsync(ComponentType type, string id)
+        {
+            var root = await _builder.GetTreeAsync();
+            return root.FindByIdAndType(type, id);
         }
     }
 }

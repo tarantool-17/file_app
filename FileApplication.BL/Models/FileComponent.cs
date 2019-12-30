@@ -9,15 +9,19 @@ namespace FileApplication.BL.Models
         public long Size { get; set; }
         public string Src { get; set; }
 
-        public override void CopyTo(Component newParent)
+        public override Component CopyTo(Component newParent, string newId)
         {
-            newParent.AddChild(new FileComponent
+            var componsent = new FileComponent
             {
                 Size = Size,
                 Src = Src,
-                Id = Id, // TODO:
+                Id = newId,
                 Name = $"Copy of {Name}"
-            });
+            };
+            
+            newParent.AddChild(componsent);
+
+            return componsent;
         }
 
         public override void Delete()

@@ -4,23 +4,17 @@
     {
         public override ComponentType Type => ComponentType.Folder;
         
-        public override void CopyTo(Component newParent)
+        public override Component CopyTo(Component newParent, string newId)
         {
             var newFolder = new FolderComponent
             {
-                Id = Id, //TODO
+                Id = newId,
                 Name = $"Copy of {Name}"
             };
             
             newParent.AddChild(newFolder);
-            
-            if (Children != null)
-            {
-                foreach (var child in Children)
-                {
-                    child.CopyTo(newFolder);
-                }
-            }
+
+            return newFolder;
         }
 
         public override void Delete()

@@ -8,11 +8,12 @@ namespace FileApplication.BL.Services
 {
     public interface ITreeBuilder
     {
-        Task<Component> BuildFolderTree();
+        Task<Component> GetTreeAsync(bool isRebuild = false);
     }
     
     public class TreeBuilder : ITreeBuilder
     {
+        private Component _root;
         private readonly IComponentServiceFactory _serviceFactory;
         
         public TreeBuilder(IComponentServiceFactory serviceFactory)
@@ -20,18 +21,21 @@ namespace FileApplication.BL.Services
             _serviceFactory = serviceFactory;
         }
         
-        public async Task<Component> BuildFolderTree()
+        public async Task<Component> GetTreeAsync(bool isRebuild = false)
         {
-            var root = new FolderComponent
+            if (_root == null || isRebuild)
             {
-                Name = "root"
-            };
+                _root = new FolderComponent
+                {
+                    Name = "root"
+                };
 
-            var items = await GetTreeItemsAsync();
+                var items = await GetTreeItemsAsync();
 
-            PopulateNode(root, items);
+                PopulateNode(_root, items);
+            }
 
-            return root;
+            return _root;
         }
         
         private async Task<List<Component>> GetTreeItemsAsync()
@@ -58,15 +62,17 @@ namespace FileApplication.BL.Services
                 .Where(x => x.ParentId == node.Id)
                 .ToList();
 
-            var childFolders = node.Children?
-                .Where(x => x.Type == ComponentType.Folder);
-
-            if (!(childFolders?.Any() ?? false))
+            if (node.Children == null) 
                 return;
-
-            foreach (var folder in childFolders)
+            
+            foreach (var child in node.Children)
             {
-                PopulateNode(folder, items);
+                child.Parent = node;
+
+                if (child.Type == ComponentType.Folder)
+                {
+                    PopulateNode(child, items);
+                }
             }
         }
     }

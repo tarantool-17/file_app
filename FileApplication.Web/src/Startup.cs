@@ -19,19 +19,20 @@ namespace FileApplication
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<ITreeBuilder, TreeBuilder>();
+            
             // Services.
             services.AddSingleton<IFacade, Facade>();
-            services.AddScoped<ITreeBuilder, TreeBuilder>();
-            services.AddScoped<IFileComponentService, FileComponentService>();
-            services.AddScoped<IFolderComponentService, FolderComponentService>();
-            services.AddScoped<IComponentService, FileComponentService>();
-            services.AddScoped<IComponentService, FolderComponentService>();
-            services.AddScoped<IComponentServiceFactory, ComponentServiceFactory>();
+            services.AddTransient<IFileComponentService, FileComponentService>();
+            services.AddTransient<IFolderComponentService, FolderComponentService>();
+            services.AddTransient<IComponentService, FileComponentService>();
+            services.AddTransient<IComponentService, FolderComponentService>();
+            services.AddTransient<IComponentServiceFactory, ComponentServiceFactory>();
             
             // Repositories.
-            services.AddScoped<IFileRepository, FileInMemoryRepository>();
-            services.AddScoped<IFolderRepository, FolderInMemoryRepository>();
-            services.AddScoped<IFileStoreProvider, FileStoreInMemoryProvider>();
+            services.AddSingleton<IFileRepository, FileInMemoryRepository>();
+            services.AddSingleton<IFolderRepository, FolderInMemoryRepository>();
+            services.AddSingleton<IFileStoreProvider, FileStoreInMemoryProvider>();
             
             services.AddSwaggerGen(c =>
             {

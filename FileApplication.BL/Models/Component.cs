@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using FileApplication.BL.Entities;
+using Newtonsoft.Json;
 
 namespace FileApplication.BL.Models
 {
@@ -10,11 +10,13 @@ namespace FileApplication.BL.Models
         public string Id { get; set; }
         public string Name { get; set; }
         public string ParentId { get; set; }
+        
+        [JsonIgnore]
         public Component Parent { get; set; }
         public List<Component> Children { get; set; }
         
 
-        public abstract void CopyTo(Component newParent);
+        public abstract Component CopyTo(Component newParent, string newId);
         public abstract void Delete();
         
 

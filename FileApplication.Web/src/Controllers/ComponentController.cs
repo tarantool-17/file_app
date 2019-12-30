@@ -1,10 +1,12 @@
 ﻿using System.Threading.Tasks;
 using FileApplication.BL.Models;
 using FileApplication.BL.Services;
+using FileApplication.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FileApplication.Controllers
 {
+    [Route("component")]
     public class ComponentController : Controller
     {
         private readonly IFacade _facade;
@@ -14,30 +16,22 @@ namespace FileApplication.Controllers
             _facade = facade;
         }
 
-        [HttpGet("tree")]
-        public async Task<Component> GetFullTreeAsync()
-        {
-            var res = await _facade.GetTreeAsync();
-
-            return res;
-        }
-
         [HttpDelete("{type}/{id}")]
         public async Task DeleteAsync(ComponentType type, string id)
         {
             await _facade.DeleteAsync(type, id);
         }
         
-        [HttpPut("{type}/{id}/{name}")]
-        public async Task RenameAsync(ComponentType type, string id, string name)
+        [HttpPut("rename")]
+        public async Task RenameAsync([FromBody] RenameModel model)
         {
-            await _facade.RenameAsync(type, id, name);
+            await _facade.RenameAsync(model.Type, model.Id, model.NewName);
         }
         
-        [HttpPut("{type}/{id}/{parentId}")]
-        public async Task CopyAsync(ComponentType type, string id)
+        [HttpPut("copy")]
+        public async Task CopyAsync([FromBody] ComponentBase model)
         {
-            await _facade.CopyAsync(type, id);
+            await _facade.CopyAsync(model.Type, model.Id);
         }
     }
 }

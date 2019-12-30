@@ -8,14 +8,12 @@
     width: 100%;
 }
 
-#center div{
-    display: inline-block;
-}
-
 #tree{
-    width: 300px;
-    height: 500px;
-    border-right: black 1px solid;
+    height: 600px;
+    border-right: #e8e8e8 1px solid;
+    border-left: #e8e8e8 1px solid;
+    border-bottom: #e8e8e8 1px solid;
+    overflow-y: auto;
 }
 
 #info{

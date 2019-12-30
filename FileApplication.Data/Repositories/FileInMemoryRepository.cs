@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,6 +34,7 @@ namespace FileApplication.Data.Repositories
 
         public async Task CreateAsync(File file)
         {
+            file.Id = Guid.NewGuid().ToString();
             _items.TryAdd(file.Id, file);
         }
 
@@ -60,30 +62,34 @@ namespace FileApplication.Data.Repositories
         {
             new File
             {
+                Id = Guid.NewGuid().ToString(),
                 Name = "test1.txt",
                 Size = 100,
-                Id = "/test1.txt"
+                Src = "/test1.txt"
             },
             new File
             {
+                Id = Guid.NewGuid().ToString(),
                 Name = "test2.txt",
                 Size = 200,
                 ParentFolderId = "1",
-                Id = "/test2.txt"
+                Src = "/test2.txt"
             },
             new File
             {
+                Id = Guid.NewGuid().ToString(),
                 Name = "test3.txt",
                 Size = 300,
                 ParentFolderId = "1",
-                Id = "/test3.txt"
+                Src = "/test3.txt"
             },
             new File
             {
+                Id = Guid.NewGuid().ToString(),
                 Name = "test4.txt",
                 Size = 50,
                 ParentFolderId = "2",
-                Id = "/test4.txt"
+                Src = "/test4.txt"
             }
         };
     }
